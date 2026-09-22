@@ -1,0 +1,479 @@
+/* =====================================================================
+   EduPredict AI — style.css
+   A calm, academic "analytics platform" look: soft neutral background,
+   white cards, a single trustworthy blue accent, and muted status
+   colors reserved strictly for performance/risk signals.
+   ===================================================================== */
+
+:root {
+  /* ---- Palette --------------------------------------------------- */
+  --edu-bg: #F5F6F8;
+  --edu-surface: #FFFFFF;
+  --edu-surface-alt: #EEF1F5;
+  --edu-border: #E1E5EB;
+  --edu-ink: #1F2733;
+  --edu-ink-muted: #5B6472;
+  --edu-ink-faint: #8991A0;
+
+  --edu-primary: #2F5D8A;
+  --edu-primary-dark: #1F3F5C;
+  --edu-primary-light: #E9F1F8;
+
+  --edu-good: #2E8B57;
+  --edu-good-bg: #E7F5EC;
+  --edu-average: #B4790F;
+  --edu-average-bg: #FBF1DE;
+  --edu-risk: #C0392B;
+  --edu-risk-bg: #FBEAE8;
+
+  --edu-radius-sm: 8px;
+  --edu-radius: 14px;
+  --edu-radius-lg: 20px;
+  --edu-shadow: 0 1px 2px rgba(31, 39, 51, 0.04), 0 4px 14px rgba(31, 39, 51, 0.05);
+
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--edu-bg);
+  color: var(--edu-ink);
+  font-family: var(--font-body);
+  font-size: 0.96rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.edu-display {
+  font-family: var(--font-display);
+  color: var(--edu-ink);
+  letter-spacing: -0.01em;
+}
+
+a { color: var(--edu-primary); text-decoration: none; }
+a:hover { color: var(--edu-primary-dark); }
+
+code {
+  background: var(--edu-surface-alt);
+  color: var(--edu-primary-dark);
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+
+/* ---- Navbar ---------------------------------------------------------- */
+
+.edu-navbar {
+  background: var(--edu-surface);
+  border-bottom: 1px solid var(--edu-border);
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+
+.edu-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--edu-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.edu-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--edu-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.edu-brand-accent { color: var(--edu-primary); }
+
+.edu-navbar .nav-link {
+  color: var(--edu-ink-muted);
+  font-weight: 500;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--edu-radius-sm);
+}
+
+.edu-navbar .nav-link:hover { color: var(--edu-ink); background: var(--edu-surface-alt); }
+
+.edu-navbar .nav-link.active {
+  color: var(--edu-primary-dark);
+  background: var(--edu-primary-light);
+}
+
+.edu-teacher { display: flex; align-items: center; gap: 0.5rem; color: var(--edu-ink); }
+
+.edu-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--edu-primary-light);
+  color: var(--edu-primary-dark);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* ---- Layout ------------------------------------------------------ */
+
+.edu-main { max-width: 1320px; margin: 0 auto; width: 100%; }
+
+.edu-page-header {
+  margin: 1.75rem 0 1.25rem;
+}
+
+.edu-page-header h1 {
+  font-size: 1.55rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.edu-page-header p {
+  color: var(--edu-ink-muted);
+  margin-bottom: 0;
+}
+
+.edu-footer {
+  color: var(--edu-ink-faint);
+  border-top: 1px solid var(--edu-border);
+  font-size: 0.82rem;
+}
+
+/* ---- Cards --------------------------------------------------------- */
+
+.edu-card {
+  background: var(--edu-surface);
+  border: 1px solid var(--edu-border);
+  border-radius: var(--edu-radius);
+  box-shadow: var(--edu-shadow);
+}
+
+.edu-card-body { padding: 1.35rem; }
+
+.edu-card-header {
+  padding: 1.1rem 1.35rem;
+  border-bottom: 1px solid var(--edu-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edu-card-header h2,
+.edu-card-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ---- Stat cards ------------------------------------------------- */
+
+.edu-stat {
+  background: var(--edu-surface);
+  border: 1px solid var(--edu-border);
+  border-left: 3px solid var(--stat-accent, var(--edu-primary));
+  border-radius: var(--edu-radius);
+  padding: 1.15rem 1.3rem;
+  height: 100%;
+  box-shadow: var(--edu-shadow);
+}
+
+.edu-stat.is-total { --stat-accent: var(--edu-primary); }
+.edu-stat.is-risk { --stat-accent: var(--edu-risk); }
+.edu-stat.is-average { --stat-accent: var(--edu-average); }
+.edu-stat.is-good { --stat-accent: var(--edu-good); }
+.edu-stat.is-score { --stat-accent: var(--edu-primary-dark); }
+
+.edu-stat-label {
+  font-size: 0.78rem;
+  text-transform: none;
+  color: var(--edu-ink-muted);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.edu-stat-value {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.edu-stat-meta { font-size: 0.78rem; color: var(--edu-ink-faint); margin-top: 0.3rem; }
+
+/* ---- Status badges/pills ------------------------------------------ */
+
+.edu-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.edu-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.edu-badge.status-good { background: var(--edu-good-bg); color: var(--edu-good); }
+.edu-badge.status-average { background: var(--edu-average-bg); color: var(--edu-average); }
+.edu-badge.status-at-risk { background: var(--edu-risk-bg); color: var(--edu-risk); }
+.edu-badge.status-unknown { background: var(--edu-surface-alt); color: var(--edu-ink-muted); }
+
+.edu-badge.risk-low { background: var(--edu-good-bg); color: var(--edu-good); }
+.edu-badge.risk-medium { background: var(--edu-average-bg); color: var(--edu-average); }
+.edu-badge.risk-high { background: var(--edu-risk-bg); color: var(--edu-risk); }
+
+/* ---- Tables ------------------------------------------------------- */
+
+.edu-table-wrap {
+  background: var(--edu-surface);
+  border: 1px solid var(--edu-border);
+  border-radius: var(--edu-radius);
+  box-shadow: var(--edu-shadow);
+  overflow: hidden;
+}
+
+.table.edu-table {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+}
+
+.edu-table thead th {
+  background: var(--edu-surface-alt);
+  color: var(--edu-ink-muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+  border-bottom: 1px solid var(--edu-border);
+  padding: 0.8rem 1rem;
+  white-space: nowrap;
+}
+
+.edu-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--edu-border);
+  color: var(--edu-ink);
+}
+
+.edu-table tbody tr:last-child td { border-bottom: none; }
+.edu-table tbody tr:hover { background: var(--edu-surface-alt); }
+
+.edu-student-name { font-weight: 600; }
+.edu-student-id { color: var(--edu-ink-faint); font-size: 0.8rem; }
+
+/* ---- Forms --------------------------------------------------------- */
+
+.edu-form-card { background: var(--edu-surface); border: 1px solid var(--edu-border); border-radius: var(--edu-radius); box-shadow: var(--edu-shadow); }
+
+.form-label { font-weight: 500; font-size: 0.86rem; color: var(--edu-ink); }
+
+.form-control, .form-select {
+  border-color: var(--edu-border);
+  border-radius: var(--edu-radius-sm);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.92rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--edu-primary);
+  box-shadow: 0 0 0 3px var(--edu-primary-light);
+}
+
+.form-text { font-size: 0.78rem; }
+
+.edu-section-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--edu-primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+/* ---- Buttons -------------------------------------------------------- */
+
+.btn-edu-primary {
+  background: var(--edu-primary);
+  border-color: var(--edu-primary);
+  color: #fff;
+  font-weight: 500;
+  border-radius: var(--edu-radius-sm);
+  padding: 0.55rem 1.15rem;
+}
+
+.btn-edu-primary:hover { background: var(--edu-primary-dark); border-color: var(--edu-primary-dark); color: #fff; }
+
+.btn-edu-outline {
+  background: transparent;
+  border: 1px solid var(--edu-border);
+  color: var(--edu-ink);
+  border-radius: var(--edu-radius-sm);
+  font-weight: 500;
+}
+
+.btn-edu-outline:hover { background: var(--edu-surface-alt); border-color: var(--edu-border); color: var(--edu-ink); }
+
+/* ---- Result panels (prediction / student details) ------------------ */
+
+.edu-result-banner {
+  border-radius: var(--edu-radius);
+  padding: 1.5rem 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border: 1px solid var(--edu-border);
+}
+
+.edu-result-banner.status-good { background: var(--edu-good-bg); border-color: transparent; }
+.edu-result-banner.status-average { background: var(--edu-average-bg); border-color: transparent; }
+.edu-result-banner.status-at-risk { background: var(--edu-risk-bg); border-color: transparent; }
+
+.edu-result-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.65);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.edu-list-check li, .edu-list-flag li {
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--edu-border);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 0.6rem;
+}
+.edu-list-check li:last-child, .edu-list-flag li:last-child { border-bottom: none; }
+.edu-list-check li i { color: var(--edu-good); }
+.edu-list-flag li i { color: var(--edu-risk); }
+
+.edu-list-reco li {
+  padding: 0.55rem 0.75rem;
+  background: var(--edu-primary-light);
+  border-radius: var(--edu-radius-sm);
+  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--edu-primary-dark);
+  display: flex;
+  gap: 0.55rem;
+}
+
+/* ---- Progress / score meter ---------------------------------------- */
+
+.edu-meter {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--edu-surface-alt);
+  overflow: hidden;
+}
+.edu-meter > span { display: block; height: 100%; border-radius: 999px; }
+
+/* ---- Login page ----------------------------------------------------- */
+
+.edu-login-wrap {
+  min-height: 100vh;
+  display: flex;
+  background: var(--edu-bg);
+}
+
+.edu-login-visual {
+  flex: 1.1;
+  background: linear-gradient(165deg, var(--edu-primary-dark), var(--edu-primary) 70%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.edu-login-visual::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  bottom: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.edu-login-visual::before {
+  content: "";
+  position: absolute;
+  left: -60px;
+  top: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.edu-login-form-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.edu-login-card { width: 100%; max-width: 380px; }
+
+.edu-login-stat { font-family: var(--font-display); font-size: 2.1rem; font-weight: 600; }
+
+@media (max-width: 900px) {
+  .edu-login-visual { display: none; }
+}
+
+/* ---- Empty state ------------------------------------------------ */
+
+.edu-empty {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  color: var(--edu-ink-muted);
+}
+.edu-empty i { font-size: 2.2rem; color: var(--edu-ink-faint); margin-bottom: 0.75rem; display: block; }
+
+/* ---- Chart canvas containers --------------------------------------- */
+
+.edu-chart-box { position: relative; height: 260px; }
+.edu-chart-box.is-tall { height: 300px; }
+
+/* ---- Misc ----------------------------------------------------------- */
+
+.edu-divider { border-color: var(--edu-border); }
+
+::selection { background: var(--edu-primary-light); color: var(--edu-primary-dark); }
+
+@media (max-width: 576px) {
+  .edu-page-header h1 { font-size: 1.3rem; }
+  .edu-stat-value { font-size: 1.5rem; }
+}

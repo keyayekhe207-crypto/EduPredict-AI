@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ student.student_name }} — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header">
+  <a href="{{ url_for('students') }}" class="text-body-secondary text-decoration-none" style="font-size:0.85rem;">
+    <i class="bi bi-arrow-left"></i> Back to students
+  </a>
+  <h1 class="mt-2">{{ student.student_name }}</h1>
+  <p>{{ student.student_id }} &nbsp;·&nbsp; {{ student['class'] }}-{{ student.division }}</p>
+</div>
+
+{% set p = prediction_label %}
+<div class="edu-result-banner {{ 'status-at-risk' if p == 'At Risk' else ('status-average' if p == 'Average' else 'status-good') }} mb-3">
+  <div class="edu-result-icon">
+    {% if p == 'At Risk' %}<i class="bi bi-exclamation-triangle-fill" style="color: var(--edu-risk);"></i>
+    {% elif p == 'Average' %}<i class="bi bi-dash-circle-fill" style="color: var(--edu-average);"></i>
+    {% else %}<i class="bi bi-check-circle-fill" style="color: var(--edu-good);"></i>{% endif %}
+  </div>
+  <div class="flex-grow-1">
+    <div class="fw-semibold" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.03em; opacity:0.75;">Current prediction</div>
+    <div class="edu-display fw-semibold" style="font-size:1.4rem;">{{ p }}</div>
+  </div>
+  <div class="text-end">
+    {% if prediction %}
+    <div class="edu-display fw-semibold" style="font-size:1.6rem;">{{ prediction.performance_score }}%</div>
+    <div style="font-size:0.78rem; opacity:0.75;">performance score · {{ (prediction.confidence * 100) | round(0) }}% confidence</div>
+    {% else %}
+    <div style="font-size:0.85rem;">Model not trained yet</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-3">
+  <!-- Left column -->
+  <div class="col-lg-5">
+    <div class="edu-card mb-3">
+      <div class="edu-card-header"><h3>Student information</h3></div>
+      <div class="edu-card-body">
+        <dl class="row mb-0" style="font-size:0.9rem;">
+          <dt class="col-6 text-body-secondary fw-normal">Student ID</dt><dd class="col-6">{{ student.student_id }}</dd>
+          <dt class="col-6 text-body-secondary fw-normal">Name</dt><dd class="col-6">{{ student.student_name }}</dd>
+          <dt class="col-6 text-body-secondary fw-normal">Class</dt><dd class="col-6">{{ student['class'] }}</dd>
+          <dt class="col-6 text-body-secondary fw-normal">Division</dt><dd class="col-6">{{ student.division }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="edu-card mb-3">
+      <div class="edu-card-header"><h3>Academic information</h3></div>
+      <div class="edu-card-body">
+        <dl class="row mb-0" style="font-size:0.9rem;">
+          <dt class="col-7 text-body-secondary fw-normal">Attendance</dt><dd class="col-5">{{ student.attendance }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Previous exam %</dt><dd class="col-5">{{ student.previous_percentage }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Internal marks</dt><dd class="col-5">{{ student.internal_marks }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Assignment marks</dt><dd class="col-5">{{ student.assignment_marks }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Practical marks</dt><dd class="col-5">{{ student.practical_marks }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Study hours/day</dt><dd class="col-5">{{ student.study_hours }}</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Class participation</dt><dd class="col-5">{{ student.class_participation }}/10</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Homework completion</dt><dd class="col-5">{{ student.homework_completion }}%</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Previous backlogs</dt><dd class="col-5">{{ student.previous_backlogs }}</dd>
+          <dt class="col-7 text-body-secondary fw-normal">Previous test score</dt><dd class="col-5">{{ student.previous_test_score }}%</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="edu-card">
+      <div class="edu-card-header"><h3>Estimated subject marks</h3></div>
+      <div class="edu-card-body">
+        <div class="edu-chart-box" style="height:220px;"><canvas id="subjectBreakdownChart"></canvas></div>
+        <p class="text-body-secondary mt-2 mb-0" style="font-size:0.76rem;">
+          Illustrative per-subject estimate derived from overall marks — this dataset does not track individual subjects.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div class="col-lg-7">
+
+    <div class="edu-card mb-3">
+      <div class="edu-card-header">
+        <h3>Risk score</h3>
+        <span class="edu-badge {{ 'risk-high' if risk_level == 'High Risk' else ('risk-medium' if risk_level == 'Medium Risk' else 'risk-low') }}">{{ risk_level }}</span>
+      </div>
+      <div class="edu-card-body">
+        <div class="d-flex justify-content-between align-items-baseline mb-2">
+          <span class="text-body-secondary" style="font-size:0.85rem;">0 = lowest risk, 100 = highest risk</span>
+          <span class="edu-display fw-semibold fs-4">{{ risk_score }}</span>
+        </div>
+        <div class="edu-meter">
+          <span style="width: {{ risk_score }}%; background: {{ 'var(--edu-risk)' if risk_level == 'High Risk' else ('var(--edu-average)' if risk_level == 'Medium Risk' else 'var(--edu-good)') }};"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <div class="edu-card h-100">
+          <div class="edu-card-header"><h3><i class="bi bi-check-circle me-1"></i> Strengths</h3></div>
+          <div class="edu-card-body">
+            <ul class="list-unstyled edu-list-check mb-0">
+              {% for s in strengths %}
+              <li><i class="bi bi-check-lg"></i><span>{{ s }}</span></li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="edu-card h-100">
+          <div class="edu-card-header"><h3><i class="bi bi-flag me-1"></i> Needs attention</h3></div>
+          <div class="edu-card-body">
+            <ul class="list-unstyled edu-list-flag mb-0">
+              {% for c in concerns %}
+              <li><i class="bi bi-exclamation-circle"></i><span>{{ c }}</span></li>
+              {% else %}
+              <li class="text-body-secondary">No specific concerns flagged.</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="edu-card">
+      <div class="edu-card-header"><h3><i class="bi bi-lightbulb me-1"></i> Recommendations for this student</h3></div>
+      <div class="edu-card-body">
+        <ul class="list-unstyled edu-list-reco mb-0">
+          {% for r in recommendations %}
+          <li><i class="bi bi-arrow-right-short"></i><span>{{ r }}</span></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script id="subject-breakdown-data" type="application/json">
+{{ subject_breakdown | tojson }}
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var data = JSON.parse(document.getElementById("subject-breakdown-data").textContent);
+  if (window.EduCharts) {
+    window.EduCharts.renderSubjectBreakdown("subjectBreakdownChart", data);
+  }
+});
+</script>
+{% endblock %}

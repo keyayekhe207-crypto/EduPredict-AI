@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Reports — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header d-flex flex-wrap justify-content-between align-items-end gap-2">
+  <div>
+    <h1>Reports</h1>
+    <p>Class performance summary and the students who need attention first.</p>
+  </div>
+  {% if has_data %}
+  <a href="{{ url_for('export_report') }}" class="btn btn-edu-outline">
+    <i class="bi bi-download me-1"></i> Export to CSV
+  </a>
+  {% endif %}
+</div>
+
+{% if not has_data %}
+<div class="edu-card">
+  <div class="edu-empty">
+    <i class="bi bi-file-earmark-text"></i>
+    <h5 class="edu-display">No report to show yet</h5>
+    <p class="mb-3">Upload student data from the Students page to generate a report.</p>
+    <a href="{{ url_for('students') }}" class="btn btn-edu-primary">Go to Students</a>
+  </div>
+</div>
+{% else %}
+
+<div class="edu-card mb-3">
+  <div class="edu-card-header"><h3>Class performance report</h3></div>
+  <div class="edu-card-body">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.4rem;">{{ stats.total_students }}</div>
+        <div class="edu-stat-label">Total students</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.4rem; color: var(--edu-risk);">{{ stats.at_risk }}</div>
+        <div class="edu-stat-label">At risk</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.4rem; color: var(--edu-average);">{{ stats.average }}</div>
+        <div class="edu-stat-label">Average</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.4rem; color: var(--edu-good);">{{ stats.good }}</div>
+        <div class="edu-stat-label">Good</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.4rem;">{{ stats.average_class_score }}%</div>
+        <div class="edu-stat-label">Avg. class score</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="edu-card">
+  <div class="edu-card-header">
+    <h3>Students requiring attention</h3>
+    <span class="text-body-secondary" style="font-size:0.82rem;">{{ needs_attention|length }} student(s)</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table edu-table mb-0">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Attendance</th>
+          <th>Previous %</th>
+          <th>Performance</th>
+          <th>Risk score</th>
+          <th>Risk level</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in needs_attention %}
+        <tr>
+          <td>
+            <div class="edu-student-name">{{ s.student_name }}</div>
+            <div class="edu-student-id">{{ s.student_id }} · {{ s.class }}-{{ s.division }}</div>
+          </td>
+          <td>{{ s.attendance }}%</td>
+          <td>{{ s.previous_percentage }}%</td>
+          <td>
+            {% set p = s.performance %}
+            <span class="edu-badge {{ 'status-at-risk' if p == 'At Risk' else ('status-average' if p == 'Average' else ('status-good' if p == 'Good' else 'status-unknown')) }}">{{ p }}</span>
+          </td>
+          <td>{{ s.risk_score }}</td>
+          <td>
+            {% set rl = s.risk_level or "" %}
+            <span class="edu-badge {{ 'risk-high' if rl == 'High Risk' else ('risk-medium' if rl == 'Medium Risk' else 'risk-low') }}">{{ rl }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('student_details', student_id=s.student_id) }}" class="btn btn-edu-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-body-secondary py-4">No students currently flagged — nice work!</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

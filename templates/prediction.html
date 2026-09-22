@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Run a prediction — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header">
+  <h1>Run a prediction</h1>
+  <p>Enter a student's academic information to get an instant performance prediction, risk score and recommendations.</p>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="edu-form-card">
+      <div class="edu-card-body">
+        <form method="POST" action="{{ url_for('prediction') }}" id="predictionForm" novalidate>
+
+          <div class="edu-section-label">Basic information</div>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label">Student name</label>
+              <input type="text" class="form-control" name="student_name" value="{{ form_data.get('student_name', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Student ID <span class="text-body-secondary">(optional)</span></label>
+              <input type="text" class="form-control" name="student_id" value="{{ form_data.get('student_id', '') }}" placeholder="e.g. STU0141">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Class</label>
+              <input type="text" class="form-control" name="student_class" value="{{ form_data.get('student_class', '12th') }}">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Division</label>
+              <input type="text" class="form-control" name="division" value="{{ form_data.get('division', '') }}" placeholder="e.g. A">
+            </div>
+          </div>
+
+          <div class="edu-section-label">Academic information</div>
+          <div class="row g-3">
+            {% set f = field_ranges %}
+            <div class="col-md-6">
+              <label class="form-label">Attendance %</label>
+              <input type="number" step="0.1" class="form-control" name="attendance" min="{{ f.attendance[0] }}" max="{{ f.attendance[1] }}" value="{{ form_data.get('attendance', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Previous exam %</label>
+              <input type="number" step="0.1" class="form-control" name="previous_percentage" min="{{ f.previous_percentage[0] }}" max="{{ f.previous_percentage[1] }}" value="{{ form_data.get('previous_percentage', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Internal marks</label>
+              <input type="number" step="0.1" class="form-control" name="internal_marks" min="{{ f.internal_marks[0] }}" max="{{ f.internal_marks[1] }}" value="{{ form_data.get('internal_marks', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Assignment marks</label>
+              <input type="number" step="0.1" class="form-control" name="assignment_marks" min="{{ f.assignment_marks[0] }}" max="{{ f.assignment_marks[1] }}" value="{{ form_data.get('assignment_marks', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Practical marks</label>
+              <input type="number" step="0.1" class="form-control" name="practical_marks" min="{{ f.practical_marks[0] }}" max="{{ f.practical_marks[1] }}" value="{{ form_data.get('practical_marks', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Study hours / day</label>
+              <input type="number" step="0.1" class="form-control" name="study_hours" min="{{ f.study_hours[0] }}" max="{{ f.study_hours[1] }}" value="{{ form_data.get('study_hours', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Class participation (0-10)</label>
+              <input type="number" step="0.1" class="form-control" name="class_participation" min="{{ f.class_participation[0] }}" max="{{ f.class_participation[1] }}" value="{{ form_data.get('class_participation', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Homework completion %</label>
+              <input type="number" step="0.1" class="form-control" name="homework_completion" min="{{ f.homework_completion[0] }}" max="{{ f.homework_completion[1] }}" value="{{ form_data.get('homework_completion', '') }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Previous backlogs</label>
+              <input type="number" step="1" class="form-control" name="previous_backlogs" min="{{ f.previous_backlogs[0] }}" max="{{ f.previous_backlogs[1] }}" value="{{ form_data.get('previous_backlogs', 0) }}" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Previous test score %</label>
+              <input type="number" step="0.1" class="form-control" name="previous_test_score" min="{{ f.previous_test_score[0] }}" max="{{ f.previous_test_score[1] }}" value="{{ form_data.get('previous_test_score', '') }}" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-edu-primary w-100 mt-4">
+            <i class="bi bi-magic me-1"></i> Predict performance
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="col-lg-6">
+    {% if result %}
+    {% set p = result.prediction_label %}
+    <div class="edu-result-banner {{ 'status-at-risk' if p == 'At Risk' else ('status-average' if p == 'Average' else 'status-good') }} mb-3">
+      <div class="edu-result-icon">
+        {% if p == 'At Risk' %}<i class="bi bi-exclamation-triangle-fill" style="color: var(--edu-risk);"></i>
+        {% elif p == 'Average' %}<i class="bi bi-dash-circle-fill" style="color: var(--edu-average);"></i>
+        {% else %}<i class="bi bi-check-circle-fill" style="color: var(--edu-good);"></i>{% endif %}
+      </div>
+      <div class="flex-grow-1">
+        <div class="fw-semibold" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.03em; opacity:0.75;">{{ result.student_name }}</div>
+        <div class="edu-display fw-semibold" style="font-size:1.4rem;">{{ p }}</div>
+      </div>
+      <div class="text-end">
+        <div class="edu-display fw-semibold" style="font-size:1.6rem;">{{ result.performance_score }}%</div>
+        <div style="font-size:0.78rem; opacity:0.75;">{{ (result.confidence * 100) | round(0) }}% confidence</div>
+      </div>
+    </div>
+
+    <div class="edu-card mb-3">
+      <div class="edu-card-header">
+        <h3>Risk score</h3>
+        <span class="edu-badge {{ 'risk-high' if result.risk_level == 'High Risk' else ('risk-medium' if result.risk_level == 'Medium Risk' else 'risk-low') }}">{{ result.risk_level }}</span>
+      </div>
+      <div class="edu-card-body">
+        <div class="d-flex justify-content-between align-items-baseline mb-2">
+          <span class="text-body-secondary" style="font-size:0.85rem;">0 = lowest risk, 100 = highest risk</span>
+          <span class="edu-display fw-semibold fs-4">{{ result.risk_score }}</span>
+        </div>
+        <div class="edu-meter">
+          <span style="width: {{ result.risk_score }}%; background: {{ 'var(--edu-risk)' if result.risk_level == 'High Risk' else ('var(--edu-average)' if result.risk_level == 'Medium Risk' else 'var(--edu-good)') }};"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-sm-6">
+        <div class="edu-card h-100">
+          <div class="edu-card-header"><h3><i class="bi bi-check-circle me-1"></i> Strengths</h3></div>
+          <div class="edu-card-body">
+            <ul class="list-unstyled edu-list-check mb-0">
+              {% for s in result.strengths %}<li><i class="bi bi-check-lg"></i><span>{{ s }}</span></li>{% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="edu-card h-100">
+          <div class="edu-card-header"><h3><i class="bi bi-flag me-1"></i> Needs attention</h3></div>
+          <div class="edu-card-body">
+            <ul class="list-unstyled edu-list-flag mb-0">
+              {% for c in result.concerns %}<li><i class="bi bi-exclamation-circle"></i><span>{{ c }}</span></li>
+              {% else %}<li class="text-body-secondary">No specific concerns flagged.</li>{% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="edu-card">
+      <div class="edu-card-header"><h3><i class="bi bi-lightbulb me-1"></i> Recommendations</h3></div>
+      <div class="edu-card-body">
+        <ul class="list-unstyled edu-list-reco mb-0">
+          {% for r in result.recommendations %}<li><i class="bi bi-arrow-right-short"></i><span>{{ r }}</span></li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="edu-card h-100">
+      <div class="edu-empty">
+        <i class="bi bi-clipboard-check"></i>
+        <h5 class="edu-display">No prediction yet</h5>
+        <p class="mb-0">Fill in the form and click <strong>Predict performance</strong> to see the result here.</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/prediction.js') }}"></script>
+{% endblock %}

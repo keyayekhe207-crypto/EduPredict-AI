@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}About — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header">
+  <h1>About EduPredict AI</h1>
+  <p>What this tool does, how it works, and where its limits are.</p>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+
+    <div class="edu-card mb-3">
+      <div class="edu-card-header"><h3>What is this?</h3></div>
+      <div class="edu-card-body">
+        <p>EduPredict AI is a local decision-support tool for teachers of 12th-standard students. It analyses attendance, marks, study habits and other academic signals to flag students who may benefit from extra attention, well before final results.</p>
+        <p class="mb-0">It runs entirely on your own computer using CSV files — there is no database and no data ever leaves your machine.</p>
+      </div>
+    </div>
+
+    <div class="edu-card mb-3">
+      <div class="edu-card-header"><h3>How the prediction works</h3></div>
+      <div class="edu-card-body">
+        <p>A Random Forest classifier (a machine learning model made of many decision trees voting together) is trained on <code>data/students.csv</code> using ten academic features: attendance, previous exam percentage, internal marks, assignment marks, practical marks, study hours, class participation, homework completion, previous backlogs, and previous test score.</p>
+        <p>For each student, the model outputs one of three categories — <strong>At Risk</strong>, <strong>Average</strong>, or <strong>Good</strong> — along with a confidence level. A separate, transparent rule-based risk score (0–100) is calculated from the same fields so a teacher can see exactly which factors are driving the result.</p>
+        <p class="mb-0">Strengths, concerns and recommendations are generated per student from their own specific numbers — no two students receive identical advice unless their data genuinely matches.</p>
+      </div>
+    </div>
+
+    <div class="edu-card">
+      <div class="edu-card-header"><h3>Important limitations</h3></div>
+      <div class="edu-card-body">
+        <ul class="mb-0" style="font-size:0.92rem;">
+          <li class="mb-2">This is an <strong>educational decision-support prototype</strong>, not a scientifically validated academic or psychological assessment tool.</li>
+          <li class="mb-2">Predictions are based on a small sample dataset and simple features — they can be wrong, and should never be the sole basis for a decision about a student.</li>
+          <li class="mb-2">The teacher always remains responsible for interpreting results and deciding what action, if any, to take.</li>
+          <li class="mb-0">Login is a local demo system for coursework purposes and is not intended for production or sensitive real student data.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="col-lg-4">
+    <div class="edu-card">
+      <div class="edu-card-header"><h3>Built with</h3></div>
+      <div class="edu-card-body">
+        <ul class="list-unstyled mb-0" style="font-size:0.9rem;">
+          <li class="mb-2"><i class="bi bi-check2 me-2 text-body-secondary"></i>Python &amp; Flask</li>
+          <li class="mb-2"><i class="bi bi-check2 me-2 text-body-secondary"></i>Pandas &amp; NumPy</li>
+          <li class="mb-2"><i class="bi bi-check2 me-2 text-body-secondary"></i>Scikit-learn (Random Forest)</li>
+          <li class="mb-2"><i class="bi bi-check2 me-2 text-body-secondary"></i>Bootstrap 5 &amp; Bootstrap Icons</li>
+          <li class="mb-2"><i class="bi bi-check2 me-2 text-body-secondary"></i>Chart.js</li>
+          <li class="mb-0"><i class="bi bi-check2 me-2 text-body-secondary"></i>CSV files — no database</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

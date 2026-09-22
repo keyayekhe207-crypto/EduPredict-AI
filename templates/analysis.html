@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Analysis — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header">
+  <h1>Class analysis</h1>
+  <p>Overall academic trends across the current dataset.</p>
+</div>
+
+{% if not has_data %}
+<div class="edu-card">
+  <div class="edu-empty">
+    <i class="bi bi-bar-chart"></i>
+    <h5 class="edu-display">No data to analyse yet</h5>
+    <p class="mb-3">Upload a CSV from the Students page first.</p>
+    <a href="{{ url_for('students') }}" class="btn btn-edu-primary">Go to Students</a>
+  </div>
+</div>
+{% else %}
+
+<div class="row g-3">
+  <div class="col-6 col-lg-3">
+    <div class="edu-stat is-total"><div class="edu-stat-label">Total students</div><div class="edu-stat-value">{{ stats.total_students }}</div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="edu-stat is-risk"><div class="edu-stat-label">At risk</div><div class="edu-stat-value">{{ stats.at_risk }}</div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="edu-stat is-average"><div class="edu-stat-label">Average</div><div class="edu-stat-value">{{ stats.average }}</div></div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="edu-stat is-good"><div class="edu-stat-label">Good performance</div><div class="edu-stat-value">{{ stats.good }}</div></div>
+  </div>
+</div>
+
+<div class="edu-card mt-3">
+  <div class="edu-card-header"><h3>Class averages</h3></div>
+  <div class="edu-card-body">
+    <div class="row g-3 text-center">
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.attendance }}%</div>
+        <div class="edu-stat-label">Attendance</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.previous_percentage }}%</div>
+        <div class="edu-stat-label">Previous marks</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.internal_marks }}%</div>
+        <div class="edu-stat-label">Internal marks</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.assignment_marks }}%</div>
+        <div class="edu-stat-label">Assignment score</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.practical_marks }}%</div>
+        <div class="edu-stat-label">Practical score</div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="edu-stat-value" style="font-size:1.3rem;">{{ averages.study_hours }}</div>
+        <div class="edu-stat-label">Study hours/day</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-4">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Performance distribution</h3></div>
+      <div class="edu-card-body"><div class="edu-chart-box"><canvas id="analysisPerformanceChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Risk distribution</h3></div>
+      <div class="edu-card-body"><div class="edu-chart-box"><canvas id="riskDistributionChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Attendance distribution</h3></div>
+      <div class="edu-card-body"><div class="edu-chart-box"><canvas id="analysisAttendanceChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mt-1">
+  <div class="col-lg-7">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Subject performance</h3></div>
+      <div class="edu-card-body"><div class="edu-chart-box is-tall"><canvas id="analysisSubjectChart"></canvas></div></div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Study hours vs. performance</h3></div>
+      <div class="edu-card-body"><div class="edu-chart-box is-tall"><canvas id="analysisStudyHoursChart"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<script id="analysis-data" type="application/json">
+{
+  "performanceDistribution": {{ stats.performance_distribution | tojson }},
+  "riskDistribution": {{ risk_distribution | tojson }},
+  "subjectAverages": {{ stats.subject_averages | tojson }},
+  "attendanceBuckets": {{ stats.attendance_buckets | tojson }},
+  "studyHoursVsPerformance": {{ stats.study_hours_vs_performance | tojson }}
+}
+</script>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var el = document.getElementById("analysis-data");
+  if (!el || !window.EduCharts) return;
+  var data = JSON.parse(el.textContent);
+
+  EduCharts.renderPerformanceDoughnut("analysisPerformanceChart", data.performanceDistribution);
+  EduCharts.renderRiskDoughnut("riskDistributionChart", data.riskDistribution);
+  EduCharts.renderAttendanceBar("analysisAttendanceChart", data.attendanceBuckets);
+  EduCharts.renderSubjectBar("analysisSubjectChart", data.subjectAverages);
+  EduCharts.renderStudyHoursBar("analysisStudyHoursChart", data.studyHoursVsPerformance);
+});
+</script>
+{% endblock %}

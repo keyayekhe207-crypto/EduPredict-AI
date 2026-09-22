@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Trained model artifacts (regenerate with: python ml/train_model.py)
+ml/model/*.pkl
+ml/model/model_metadata.json
+
+# Uploaded files (keep the folder, ignore its contents)
+uploads/*
+!uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Flask
+instance/
+.flaskenv

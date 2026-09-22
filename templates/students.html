@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}Students — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header d-flex flex-wrap justify-content-between align-items-end gap-2">
+  <div>
+    <h1>Students</h1>
+    <p>{{ filtered_count }} of {{ total_count }} student(s) shown.</p>
+  </div>
+  <button type="button" class="btn btn-edu-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+    <i class="bi bi-upload me-1"></i> Upload CSV
+  </button>
+</div>
+
+<!-- Search & filters -->
+<div class="edu-card mb-3">
+  <div class="edu-card-body">
+    <form method="GET" action="{{ url_for('students') }}" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Search</label>
+        <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Name or student ID">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">Performance</label>
+        <select class="form-select" name="performance">
+          <option value="all" {{ "selected" if performance == "all" }}>All</option>
+          <option value="At Risk" {{ "selected" if performance == "At Risk" }}>At Risk</option>
+          <option value="Average" {{ "selected" if performance == "Average" }}>Average</option>
+          <option value="Good" {{ "selected" if performance == "Good" }}>Good</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">Risk level</label>
+        <select class="form-select" name="risk_level">
+          <option value="all" {{ "selected" if risk_level == "all" }}>All</option>
+          <option value="Low Risk" {{ "selected" if risk_level == "Low Risk" }}>Low</option>
+          <option value="Medium Risk" {{ "selected" if risk_level == "Medium Risk" }}>Medium</option>
+          <option value="High Risk" {{ "selected" if risk_level == "High Risk" }}>High</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label">Min. attendance %</label>
+        <input type="number" class="form-control" name="attendance_min" min="0" max="100" value="{{ attendance_min }}" placeholder="e.g. 60">
+      </div>
+      <div class="col-6 col-md-1">
+        <label class="form-label">Marks ≥</label>
+        <input type="number" class="form-control" name="marks_min" min="0" max="100" value="{{ marks_min }}">
+      </div>
+      <div class="col-6 col-md-1">
+        <label class="form-label">Marks ≤</label>
+        <input type="number" class="form-control" name="marks_max" min="0" max="100" value="{{ marks_max }}">
+      </div>
+      <div class="col-6 col-md-1 d-grid">
+        <button type="submit" class="btn btn-edu-outline"><i class="bi bi-funnel"></i></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if not has_data %}
+<div class="edu-card">
+  <div class="edu-empty">
+    <i class="bi bi-people"></i>
+    <h5 class="edu-display">No students yet</h5>
+    <p>Upload a CSV to get started.</p>
+  </div>
+</div>
+{% else %}
+
+<div class="edu-table-wrap">
+  <div class="table-responsive">
+    <table class="table edu-table mb-0">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Class</th>
+          <th>Attendance</th>
+          <th>Avg. marks</th>
+          <th>Study hrs/day</th>
+          <th>Assignment</th>
+          <th>Practical</th>
+          <th>Performance</th>
+          <th>Risk level</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>
+            <div class="edu-student-name">{{ s.student_name }}</div>
+            <div class="edu-student-id">{{ s.student_id }}</div>
+          </td>
+          <td>{{ s['class'] }}-{{ s.division }}</td>
+          <td>{{ s.attendance }}%</td>
+          <td>{{ ((s.previous_percentage + s.internal_marks) / 2) | round(1) }}%</td>
+          <td>{{ s.study_hours }}</td>
+          <td>{{ s.assignment_marks }}%</td>
+          <td>{{ s.practical_marks }}%</td>
+          <td>
+            {% set p = s.performance %}
+            <span class="edu-badge {{ 'status-at-risk' if p == 'At Risk' else ('status-average' if p == 'Average' else ('status-good' if p == 'Good' else 'status-unknown')) }}">{{ p or "Unknown" }}</span>
+          </td>
+          <td>
+            {% set rl = s.risk_level or "" %}
+            <span class="edu-badge {{ 'risk-high' if rl == 'High Risk' else ('risk-medium' if rl == 'Medium Risk' else 'risk-low') }}">{{ rl }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('student_details', student_id=s.student_id) }}" class="btn btn-edu-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="text-center text-body-secondary py-4">No students match your search/filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endif %}
+
+<!-- Upload modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius: var(--edu-radius); border: none;">
+      <form method="POST" action="{{ url_for('upload_csv') }}" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title edu-display">Upload student CSV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-body-secondary" style="font-size:0.88rem;">
+            The file replaces the current working dataset used across the dashboard. Required columns:
+          </p>
+          <p><code style="font-size:0.72rem; line-height:1.6;">student_id, student_name, class, division, attendance, previous_percentage, internal_marks, assignment_marks, practical_marks, study_hours, class_participation, homework_completion, previous_backlogs, previous_test_score</code></p>
+          <input class="form-control" type="file" name="csv_file" accept=".csv" required>
+          <div class="form-text">
+            Need something to test with? Use <code>data/sample_students.csv</code> from the project folder.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-edu-outline" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-edu-primary">Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

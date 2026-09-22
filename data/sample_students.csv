@@ -1,0 +1,26 @@
+student_id,student_name,class,division,attendance,previous_percentage,internal_marks,assignment_marks,practical_marks,study_hours,class_participation,homework_completion,previous_backlogs,previous_test_score,performance
+STU0012,Pallavi Sharma,12th,A,39.5,77.4,82.8,70.2,82.7,6.8,8.1,66.1,3,68.9,Average
+STU0023,Tanvi Deshmukh,12th,C,66.4,94.1,99.0,100.0,87.7,7.4,9.8,85.9,0,100.0,Good
+STU0029,Kabir Bhosale,12th,A,66.1,64.7,78.6,66.7,57.6,2.0,6.8,79.5,1,68.9,Average
+STU0033,Ananya Nair,12th,C,68.5,76.8,88.9,75.8,100.0,6.6,7.6,63.5,2,96.2,Good
+STU0037,Ananya Deshmukh,12th,C,78.7,64.8,67.0,50.9,75.0,4.2,3.6,66.9,0,42.5,Average
+STU0046,Riya Gupta,12th,C,65.9,61.8,60.7,50.7,77.9,0.9,3.4,55.0,0,53.8,Average
+STU0052,Siddharth Reddy,12th,C,86.5,84.1,87.3,90.8,87.9,4.8,8.1,83.4,0,97.7,Good
+STU0060,Ritika Kale,12th,C,76.8,65.2,65.8,65.6,66.7,4.3,3.3,48.1,0,70.9,Average
+STU0077,Diya Bhosale,12th,C,76.1,86.4,100.0,100.0,98.9,5.9,7.8,100.0,1,100.0,Good
+STU0078,Swati Shah,12th,C,53.9,40.5,49.6,71.9,49.9,2.3,6.7,60.1,0,61.5,Average
+STU0092,Tanvi Bhosale,12th,B,65.8,81.4,83.4,85.4,79.0,4.9,9.2,88.4,0,94.7,Good
+STU0095,Ishaan Patil,12th,A,72.2,78.2,65.6,80.9,65.7,6.0,3.8,87.7,0,86.3,Good
+STU0099,Kavya Rane,12th,B,79.9,78.4,80.5,76.3,66.6,3.8,6.3,72.7,0,83.6,Good
+STU0102,Ritika Rao,12th,B,52.9,68.9,85.0,69.1,78.9,4.5,6.8,54.2,0,72.0,Good
+STU0105,Varun Sharma,12th,A,41.7,39.1,39.5,57.0,39.9,2.4,6.6,56.7,0,46.6,Average
+STU0108,Kartik Kulkarni,12th,B,55.3,75.6,65.2,58.3,84.1,5.7,3.4,63.1,0,64.4,Average
+STU0112,Meera Joshi,12th,B,68.5,78.6,76.6,83.1,76.4,5.5,6.2,74.7,0,86.7,Good
+STU0117,Myra Patil,12th,A,63.1,38.0,46.2,67.0,49.9,2.9,7.0,54.2,0,33.6,Average
+STU0118,Yash Bhosale,12th,B,59.7,61.9,71.1,66.7,58.5,5.3,8.7,61.1,0,73.6,Average
+STU0120,Vivaan Nair,12th,C,45.7,88.3,79.6,86.9,84.6,5.7,9.9,86.3,0,83.0,Good
+STU0126,Vihaan Iyer,12th,C,48.7,59.1,67.6,55.0,53.9,2.2,2.5,53.8,0,65.9,Average
+STU0129,Pooja Kumar,12th,B,61.7,61.9,69.4,62.8,45.2,4.7,8.5,40.2,0,59.4,Average
+STU0130,Dev Chavan,12th,A,81.5,87.8,92.4,91.7,100.0,4.7,8.4,100.0,0,86.0,Good
+STU0133,Raj Bhosale,12th,A,59.7,69.5,85.0,76.3,74.1,3.2,8.2,99.4,0,65.1,Good
+STU0140,Aryan Nair,12th,C,68.3,88.0,78.9,91.2,80.0,3.8,8.4,60.2,0,80.1,Good

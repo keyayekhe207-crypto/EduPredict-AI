@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — EduPredict AI{% endblock %}
+
+{% block content %}
+
+<div class="edu-page-header d-flex flex-wrap justify-content-between align-items-end gap-2">
+  <div>
+    <h1>Class dashboard</h1>
+    <p>A live snapshot of your 12th-standard class, generated from the current student data.</p>
+  </div>
+  <a href="{{ url_for('prediction') }}" class="btn btn-edu-primary">
+    <i class="bi bi-magic me-1"></i> Run a new prediction
+  </a>
+</div>
+
+{% if not has_data %}
+<div class="edu-card">
+  <div class="edu-empty">
+    <i class="bi bi-clipboard-data"></i>
+    <h5 class="edu-display">No student data yet</h5>
+    <p class="mb-3">Upload a CSV of student records from the Students page to populate this dashboard.</p>
+    <a href="{{ url_for('students') }}" class="btn btn-edu-primary">Go to Students</a>
+  </div>
+</div>
+{% else %}
+
+<!-- Stat cards -->
+<div class="row g-3">
+  <div class="col-6 col-lg">
+    <div class="edu-stat is-total">
+      <div class="edu-stat-label">Total students</div>
+      <div class="edu-stat-value">{{ stats.total_students }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg">
+    <div class="edu-stat is-risk">
+      <div class="edu-stat-label">At risk</div>
+      <div class="edu-stat-value">{{ stats.at_risk }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg">
+    <div class="edu-stat is-average">
+      <div class="edu-stat-label">Average</div>
+      <div class="edu-stat-value">{{ stats.average }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg">
+    <div class="edu-stat is-good">
+      <div class="edu-stat-label">Good performance</div>
+      <div class="edu-stat-value">{{ stats.good }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-lg">
+    <div class="edu-stat is-score">
+      <div class="edu-stat-label">Avg. class score</div>
+      <div class="edu-stat-value">{{ stats.average_class_score }}%</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts row 1 -->
+<div class="row g-3 mt-1">
+  <div class="col-lg-5">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Performance distribution</h3></div>
+      <div class="edu-card-body">
+        <div class="edu-chart-box"><canvas id="performanceChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Average marks by subject</h3></div>
+      <div class="edu-card-body">
+        <div class="edu-chart-box"><canvas id="subjectChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts row 2 -->
+<div class="row g-3 mt-1">
+  <div class="col-lg-6">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Attendance distribution</h3></div>
+      <div class="edu-card-body">
+        <div class="edu-chart-box"><canvas id="attendanceChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="edu-card h-100">
+      <div class="edu-card-header"><h3>Study hours vs. performance</h3></div>
+      <div class="edu-card-body">
+        <div class="edu-chart-box"><canvas id="studyHoursChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Students requiring attention -->
+<div class="edu-card mt-3">
+  <div class="edu-card-header">
+    <h3>Students requiring attention</h3>
+    <a href="{{ url_for('reports') }}" class="btn btn-edu-outline btn-sm">View full report</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table edu-table mb-0">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Attendance</th>
+          <th>Risk score</th>
+          <th>Risk level</th>
+          <th>Performance</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in top_risk %}
+        <tr>
+          <td>
+            <div class="edu-student-name">{{ s.student_name }}</div>
+            <div class="edu-student-id">{{ s.student_id }} · {{ s.class }}-{{ s.division }}</div>
+          </td>
+          <td>{{ s.attendance }}%</td>
+          <td>{{ s.risk_score }}</td>
+          <td>
+            {% set rl = s.risk_level or "" %}
+            <span class="edu-badge {{ 'risk-high' if rl == 'High Risk' else ('risk-medium' if rl == 'Medium Risk' else 'risk-low') }}">{{ rl }}</span>
+          </td>
+          <td>
+            {% set p = s.performance %}
+            <span class="edu-badge {{ 'status-at-risk' if p == 'At Risk' else ('status-average' if p == 'Average' else ('status-good' if p == 'Good' else 'status-unknown')) }}">{{ p }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('student_details', student_id=s.student_id) }}" class="btn btn-edu-outline btn-sm">View</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-body-secondary py-4">No students currently flagged — nice work!</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script id="dashboard-data" type="application/json">
+{
+  "performanceDistribution": {{ stats.performance_distribution | tojson }},
+  "subjectAverages": {{ stats.subject_averages | tojson }},
+  "attendanceBuckets": {{ stats.attendance_buckets | tojson }},
+  "studyHoursVsPerformance": {{ stats.study_hours_vs_performance | tojson }}
+}
+</script>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
